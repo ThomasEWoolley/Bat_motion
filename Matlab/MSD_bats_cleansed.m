@@ -1,7 +1,7 @@
 ccc
 
 
-[Track_data,Track_titles]=xlsread('./Cleansed_radio_track_data.xlsx');
+[Track_data,Track_titles]=xlsread('Cleansed_radio_track_data.xlsx');
 
 [Roost_data,Roost_titles]=xlsread('radiotrack_roosts.csv');
 [Sunrise_set_data,Sunrise_set_titles]=xlsread('Sunrise_set_Exeter.csv');
@@ -16,7 +16,7 @@ Detection_times_sec=seconds(timeofday(Detection_times));
 Corrected_detector_times=Detection_times_sec+24*60*60*(Detection_times_sec<12*60*60)-seconds(timeofday(Sunset_on_day));
 
 % %%
-How_many_bat_nights=length(unique( Track_data(:,[1 3]), 'rows'))
+How_many_bat_nights=length(unique( Track_data(:,[1 3]), 'rows'));
 
 
 %% Normalise tracks
@@ -32,7 +32,7 @@ for i=unique(Track_data(:,1))'
             Index2=(Track_data(:,1)==i)&(Track_data(:,3)==j);
             x_displacement(Index2,1)=Track_data(Index2,4)-Roost_x;
             y_displacement(Index2,1)=Track_data(Index2,5)-Roost_y;
-            C_d_times(Index2,1)=Corrected_detector_times(Index2,1)
+            C_d_times(Index2,1)=Corrected_detector_times(Index2,1);
         end
         
     end
@@ -67,8 +67,8 @@ end
 %%
 close all
 r=x_interpolated.^2+y_interpolated.^2;
-rmean=mean(r,2,'omitnan')
-rvar=var(r,1,2,'omitnan')
+rmean=mean(r,2,'omitnan');
+rvar=var(r,1,2,'omitnan');
 N=sum(~isnan(r),2);
 SE=sqrt(rvar./N);
 
@@ -78,4 +78,8 @@ confplot2(Times'/60^2,rmean,SE,'r',0.3);
 xlabel('Hours after sunset')
 ylabel('MSD in m$^2$')
 ylim([0,2e6])
-export_fig('../Pictures/Matlab_MSD','-r300')
+xline(1.5,'b')
+text(1.4,19e5,'Phase 1','HorizontalAlignment','right')
+text(1.7,19e5,'Phase 2','HorizontalAlignment','left')
+% export_fig('../Pictures/Matlab_MSD','-r300')
+save Roost_trajectories.mat
